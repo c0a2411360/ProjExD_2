@@ -3,9 +3,30 @@ import random
 import sys
 import pygame as pg
 
+DELTA={
+    pg.K_UP:(0,-5),
+    pg.K_DOWN:(0,+5),
+    pg.K_LEFT:(-5,0),
+    pg.K_RIGHT:(+5,0),
+    }
 
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+
+def check_bound(rct:pg.Rect) -> tuple[bool,bool]:
+    """
+    引数：こうかとんRectか爆弾Rect
+    戻り値：タプル（横方向判定結果,縦方向判定結果）
+    画面内ならTrue、画面外ならFalse
+    """
+    yoko=True
+    tate=True
+    if rct.left<0 or WIDTH<rct.right:  # 横のはみ出し判定
+        yoko=False
+    if rct.top<0 or HEIGHT<rct.bottom:  # 縦のはみ出し判定
+        tate=False
+    return yoko,tate
 
 
 def main():
@@ -28,14 +49,6 @@ def main():
             if event.type == pg.QUIT: 
                 return
         screen.blit(bg_img, [0, 0]) 
-
-        DELTA={
-            pg.K_UP:(0,-5),
-            pg.K_DOWN:(0,+5),
-            pg.K_LEFT:(-5,0),
-            pg.K_RIGHT:(+5,0),
-            }
-        
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
         # if key_lst[pg.K_UP]:
@@ -53,7 +66,14 @@ def main():
                 sum_mv[1]+=d[1]  # 縦移動
 
         kk_rct.move_ip(sum_mv)
+        if check_bound(kk_rct) != (True,True):  # 画面外なら
+            kk_rct.move_ip(-sum_mv[0],-sum_mv[1])  # 移動をなかったことに
         screen.blit(kk_img, kk_rct)
+        yoko,tate=check_bound(bb_rct)
+        if not yoko:
+            vx *= -1
+        if not tate:
+            vy *= -1
         bb_rct.move_ip(vx,vy)
         screen.blit(bb_img, bb_rct)
         pg.display.update()
