@@ -23,9 +23,9 @@ def check_bound(rct:pg.Rect) -> tuple[bool,bool]:
     """
     yoko=True
     tate=True
-    if rct.left<0 or WIDTH<rct.right:  # 横のはみ出し判定
+    if rct.left < 0 or WIDTH < rct.right:  # 横のはみ出し判定
         yoko=False
-    if rct.top<0 or HEIGHT<rct.bottom:  # 縦のはみ出し判定
+    if rct.top < 0 or HEIGHT < rct.bottom:  # 縦のはみ出し判定
         tate=False
     return yoko,tate
 
