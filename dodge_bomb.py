@@ -65,7 +65,29 @@ def init_bb_imgs() -> tuple[list[pg.Surface],list[int]]:
         bb_img.set_colorkey((0,0,0))
         bb_imgs.append(bb_img)
     bb_accs=[a for a in range(1,11)]   
-    return bb_imgs,bb_accs  
+    return bb_imgs,bb_accs 
+
+
+def get_kk_imgs() -> dict[tuple[int,int],pg.Surface]:
+    """
+    get_kk_imgs の Docstring
+    
+    :return: 説明
+    :rtype: dict[tuple[int, int], Surface]
+    """
+    kk_base=pg.image.load("fig/3.png")
+    kk_dict = {
+        (0, 0):   pg.transform.rotozoom(kk_base,   0, 1.0),   # 動かない → 右向き
+        (0, -5):  pg.transform.rotozoom(kk_base,  90, 1.0),   # 上
+        (0, +5):  pg.transform.rotozoom(kk_base, -90, 1.0),   # 下
+        (+5, 0):  pg.transform.rotozoom(kk_base,   0, 1.0),   # 右
+        (-5, 0):  pg.transform.rotozoom(pg.transform.flip(kk_base, True, False), 0, 1.0),  # 左（反転して0°）
+        (+5, -5): pg.transform.rotozoom(kk_base,  45, 1.0),   # 右上
+        (+5, +5): pg.transform.rotozoom(kk_base, -45, 1.0),   # 右下
+        (-5, -5): pg.transform.rotozoom(pg.transform.flip(kk_base, True, False), -45, 1.0), # 左上
+        (-5, +5): pg.transform.rotozoom(pg.transform.flip(kk_base, True, False),  45, 1.0), # 左下
+    }
+    return kk_dict
 
 
 def main():
