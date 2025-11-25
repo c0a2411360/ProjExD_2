@@ -1,6 +1,7 @@
 import os
 import random
 import sys
+import time
 import pygame as pg
 
 DELTA={
@@ -29,6 +30,33 @@ def check_bound(rct:pg.Rect) -> tuple[bool,bool]:
     return yoko,tate
 
 
+def gameover(screen:pg.Surface) -> None:
+    """
+    ゲームオーバー画面表示
+    引数：スクリーン
+    """
+    black=pg.Surface((WIDTH,HEIGHT))
+    pg.draw.rect(black,(0,0,0),(0,0,WIDTH,HEIGHT))  # 画面サイズの黒い短形
+    black.set_alpha(200)  # 透明度
+    fonto=pg.font.Font(None,80)
+    txt=fonto.render("Game Over",True,(255,255,255))
+    txt_rect = txt.get_rect(center=(WIDTH//2, HEIGHT//2))  # ゲームオーバーの字を中央に
+    black.blit(txt, txt_rect)
+    kk_img = pg.image.load("fig/8.png")
+    kk_rct=kk_img.get_rect()
+    kk_rct.center=WIDTH//2-200,HEIGHT//2
+    black.blit(kk_img,kk_rct)  # こうかとん描画左
+    kk_rct.center=WIDTH//2+200,HEIGHT//2
+    black.blit(kk_img,kk_rct)  # こうかとん描画右
+    screen.blit(black,(0,0))
+    pg.display.update()
+    time.sleep(5)
+
+
+# def init_bb_imgs() -> tuple[list[pg.Surface],list[int]]:
+
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -37,7 +65,9 @@ def main():
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
     bb_img=pg.Surface((20,20))
+
     pg.draw.circle(bb_img,(255,0,0),(10,10),10)  # 半径10の赤い円
+    
     bb_img.set_colorkey((0,0,0))
     bb_rct=bb_img.get_rect()
     bb_rct.center=random.randint(0,WIDTH),random.randint(0,HEIGHT)
@@ -50,7 +80,7 @@ def main():
                 return
             
         if kk_rct.colliderect(bb_rct):  #こうかとんと爆弾が衝突したら
-            print("ゲームオーバー")
+            gameover(screen)
             return 
         
         screen.blit(bg_img, [0, 0])
