@@ -53,8 +53,19 @@ def gameover(screen:pg.Surface) -> None:
     time.sleep(5)
 
 
-# def init_bb_imgs() -> tuple[list[pg.Surface],list[int]]:
-
+def init_bb_imgs() -> tuple[list[pg.Surface],list[int]]:
+    """
+    時間経過によって爆弾の大きさと速度が上がる
+    戻り値：爆弾とその加速度のリスト
+    """
+    bb_imgs=[]
+    for r in range(1,11):
+        bb_img=pg.Surface((20*r,20*r))
+        pg.draw.circle(bb_img,(255,0,0),(10*r,10*r),10*r)
+        bb_img.set_colorkey((0,0,0))
+        bb_imgs.append(bb_img)
+    bb_accs=[a for a in range(1,11)]   
+    return bb_imgs,bb_accs  
 
 
 def main():
@@ -64,16 +75,16 @@ def main():
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
-    bb_img=pg.Surface((20,20))
 
-    pg.draw.circle(bb_img,(255,0,0),(10,10),10)  # 半径10の赤い円
-    
-    bb_img.set_colorkey((0,0,0))
+    bb_imgs,bb_accs=init_bb_imgs()
+    bb_img=bb_imgs[0]
     bb_rct=bb_img.get_rect()
     bb_rct.center=random.randint(0,WIDTH),random.randint(0,HEIGHT)
     vx,vy=+5,+5  # 爆弾の速度：横,縦    
+
     clock = pg.time.Clock()
     tmr = 0
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
@@ -110,7 +121,16 @@ def main():
             vx *= -1
         if not tate:
             vy *= -1
-        bb_rct.move_ip(vx,vy)
+
+        avx=vx*bb_accs[min(tmr//500,9)]
+        avy=vy*bb_accs[min(tmr//500,9)]
+
+        bb_img=bb_imgs[min(tmr//500,9)]
+
+        bb_rct.width=bb_img.get_rect().width
+        bb_rct.height=bb_img.get_rect().height
+
+        bb_rct.move_ip(avx,avy)
         screen.blit(bb_img, bb_rct)
         pg.display.update()
         tmr += 1
